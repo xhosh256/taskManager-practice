@@ -17,4 +17,4 @@ You can create, check and mark as completed(just delete so far) tasks
 - Clone repository
 - Configure your db
 - Rename application-example.yaml to application.yaml and change its properties to yours to successfully connect to db
-- Run application in terminal with **mvn spring-boot:run**
+- Run application in terminal with `mvn spring-boot:run`
