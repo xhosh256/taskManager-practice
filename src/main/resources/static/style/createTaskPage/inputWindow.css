@@ -1,0 +1,51 @@
+.input-window {
+  margin-top: 50px;
+  margin-bottom: 25px;
+  width: 1700px;
+  height: 800px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+}
+
+.input-window label {
+  font-size: 80px;
+  font-weight: 600;
+  font-family: monospace;
+}
+
+.input-window input,
+.input-window textarea {
+  font-size: 48px;
+  padding: 15px 20px;
+  border-radius: 25px;
+  border: none;
+  box-shadow: 0 0 7px rgba(0, 0, 0, 0.353)
+}
+
+.input-window input {
+  margin-left: 15px;
+}
+
+.input-window textarea {
+  display: block;
+  width: 1000px;
+  height: 400px;
+  resize: none;
+  margin-top: 10px;
+}
+
+.input-window input:focus,
+.input-window textarea:focus {
+  outline: none;
+}
+
+.input-window .name-input {
+  padding: 20px 30px;
+  display: flex;
+  align-items: center;
+}
+
+.input-window .desc-input {
+  padding: 20px 30px;
+
+}

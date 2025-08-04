@@ -1,0 +1,12 @@
+### Change these properties to yours ### 
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/(your db name)
+    username: (your username)
+    password: (your password)
+    driver-name: org.postgresql.Driver
+  sql:
+    init:
+      mode: always
+      schema-location: classpath:schema.sql

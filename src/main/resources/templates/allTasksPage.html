@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>My Tasks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" th:href="@{/style/global/sidebar.css}">
+  <link rel="stylesheet" th:href="@{/style/global/general.css}">
+  <link rel="stylesheet" th:href="@{/style/showAllTasksPage/allTasksPage.css}">
+</head>
+
+<body>
+
+  <div class="page">
+    <p class="title">Task Manager</p>
+    <p class="no-tasks" th:if="${tasks.isEmpty()}">
+      You aint got any tasks yet.
+    </p>
+    <p style="font-size: 48px;" class="no-tasks-desc" th:if="${tasks.isEmpty()}">
+      Try to go to page add new task and than design your first task!
+    </p>
+
+    <div th:unless="${tasks.isEmpty()}" class="grid">
+      <div class="task" th:each="task : ${tasks}">
+        <p class="task-name"> Task name:
+          <span th:text="${task.name}">
+            TASK NAME
+          </span>
+        </p>
+
+        <p class="task-desc">Task description:
+          <span th:text="${task.description}">
+            TASK DESCRIPTION
+          </span>
+        </p>
+
+        <div class="complete-button">
+          <a th:href="@{/tasks/delete-task(id=${task.id})}">
+            <img class="checkmark" th:src="@{/image/checkmark.png}">
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="head">
+      <p>Task Manager Features</p>
+    </div>
+    <div class="links">
+      <a th:href="@{/}" class="page-link">Home Page</a>
+      <a th:href="@{/tasks/new}" class="page-link">Add New Task</a>
+      <a th:href="@{/tasks}" style="background-color: rgb(220, 220, 220);" class="page-link">Check My Tasks</a>
+    </div>
+    <div class="info-wrap">
+      <p class="info">This project is my practice with Spring Boot and JDBC. At first I'm gonna use only Spring MVC and
+        JDBC, then I'm gonna update it with using Spring Security and other Spring features, also I'm gonna change
+        database section adding JDBCTemplate, then Spring Data JDBC and finally, when I study it, I wanna use Spring
+        Data JPA with Hibernate. Further I'm gonna explore REST and use it as well! Overall I will always update this
+        project!</p>
+    </div>
+
+    <div class="socials">
+      <a href="https://t.me/xhosh256" target="_blank">
+        <img class="logo" th:src="@{/image/telegram-logo.png}">
+      </a>
+
+      <a href="https://github.com/xhosh256" target="_blank">
+        <img class="logo" th:src="@{/image/github-logo.png}">
+      </a>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-left: 300px;
+}
+
+.title {
+  font-family: 'Pacifico', cursive;
+  font-size: 100px;
+  text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.49);
+}
+
+.description {
+  max-width: 1000px;
+  font-size: 28px;
+  font-family: monospace;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.preview-text {
+  font-size: 64px;
+  font-family: monospace;
+  font-weight: 600;
+  margin-top: 100px
+}
+
+.image-wall {
+  display: flex;
+  border: 1px solid black;
+}
+
+img {
+  border: 1px solid black;
+  width: 700px;
+  height: auto;
+  object-fit: contain;
+}
