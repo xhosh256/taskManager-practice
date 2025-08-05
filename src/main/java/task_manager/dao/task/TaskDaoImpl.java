@@ -1,5 +1,6 @@
 package task_manager.dao.task;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository("taskDaoImpl")
+@Slf4j
 public class TaskDaoImpl implements TaskDao {
 
     DataSource dataSource;
@@ -37,11 +39,13 @@ public class TaskDaoImpl implements TaskDao {
             try (ResultSet resultSet = stmt.getGeneratedKeys()) {
                 if(resultSet.next()) {
                     task.setId(resultSet.getLong(1));
+                    log.info("task was created");
                 }
             }
 
         } catch (SQLException exception) {
             exception.printStackTrace();
+            log.info("Something went wrong, task wasn't created");
         }
     }
 
@@ -84,8 +88,10 @@ public class TaskDaoImpl implements TaskDao {
             stmt.setLong(1, task_id);
             stmt.setLong(2, user_id);
             stmt.executeUpdate();
+            log.info("Task with id {} was deleted", task_id);
         } catch (SQLException exception) {
             exception.printStackTrace();
+            log.info("Something went wrong, task with id {} wasn't deleted", task_id);
         }
     }
 

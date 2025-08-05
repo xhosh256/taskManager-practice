@@ -1,10 +1,12 @@
 package task_manager.controller;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import task_manager.model.Task;
 import task_manager.model.User;
@@ -54,9 +56,14 @@ public class TaskController {
     // post created task (form with action)
     @PostMapping
     public String processTask(
-            @ModelAttribute("task") Task task,
+            @ModelAttribute("task") @Valid Task task, Errors errors,
             HttpSession session
     ) {
+        if(errors.hasErrors()) {
+            log.info("Something went wrong, task wasn't created");
+            return "createTaskPage";
+        }
+
         User user = (User) session.getAttribute("user");
         task.setUser_id(user.getId());
         taskService.createTask(task);

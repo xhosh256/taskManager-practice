@@ -26,11 +26,13 @@
           <label for="name">Enter task name:</label>
           <input type="text" placeholder="Example Task Name" th:field="*{name}">
         </div>
+        <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
 
         <div class="desc-input">
           <label for="description">Enter task description:</label>
           <textarea placeholder="Example Task Description" th:field="*{description}"></textarea>
         </div>
+        <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
       </div>
 
       <button type="submit">
