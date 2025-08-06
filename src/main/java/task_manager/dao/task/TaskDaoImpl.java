@@ -2,51 +2,52 @@ package task_manager.dao.task;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import task_manager.model.Task;
-import task_manager.model.User;
 
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Repository("taskDaoImpl")
 @Slf4j
 public class TaskDaoImpl implements TaskDao {
 
-    DataSource dataSource;
+    JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public TaskDaoImpl(@Qualifier("dataSource") DataSource dataSource) {
-        this.dataSource = dataSource;
+    public TaskDaoImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public void saveTask(Task task) {
-        String sql = "insert into tasks (user_id, name, description) values (?, ?, ?)";
+        PreparedStatementCreatorFactory factory = new PreparedStatementCreatorFactory(
+                "insert into tasks (user_id, name, description) values (?, ?, ?) " +
+                        "returning id",
+                Types.INTEGER, Types.VARCHAR, Types.VARCHAR
+        );
+        factory.setReturnGeneratedKeys(true);
 
-        try (Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        PreparedStatementCreator stmt = factory.newPreparedStatementCreator(
+                Arrays.asList(
+                        task.getUser_id(),
+                        task.getName(),
+                        task.getDescription()
+                )
+        );
 
-            stmt.setLong(1, task.getUser_id());
-            stmt.setString(2, task.getName());
-            stmt.setString(3, task.getDescription());
+        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(stmt, keyHolder);
 
-            stmt.executeUpdate();
-
-            try (ResultSet resultSet = stmt.getGeneratedKeys()) {
-                if(resultSet.next()) {
-                    task.setId(resultSet.getLong(1));
-                    log.info("task was created");
-                }
-            }
-
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-            log.info("Something went wrong, task wasn't created");
-        }
+        Long task_id = keyHolder.getKey().longValue();
+        task.setId(task_id);
+        log.info("task was created");
     }
 
     @Override
@@ -54,70 +55,28 @@ public class TaskDaoImpl implements TaskDao {
         String sql = "select * from tasks where user_id = ?";
         List<Task> result = new ArrayList<>();
 
-        try (Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(sql)) {
+        return jdbcTemplate.query(
+                "select * from tasks where user_id = ?",
+                this::mapRowToTask,
+                user_id
+        );
+    }
 
-            stmt.setLong(1, user_id);
-            stmt.executeQuery();
+    private Task mapRowToTask(ResultSet resultSet, int rowNum) throws SQLException {
+        Task task = new Task();
+        task.setId(resultSet.getLong(1));
+        task.setUser_id(resultSet.getLong(2));
+        task.setName(resultSet.getString(3));
+        task.setDescription(resultSet.getString(4));
 
-            try (ResultSet resultSet = stmt.getResultSet()) {
-                while (resultSet.next()) {
-                    Task task = new Task();
-                    task.setId(resultSet.getLong(1));
-                    task.setUser_id(resultSet.getLong(2));
-                    task.setName(resultSet.getString(3));
-                    task.setDescription(resultSet.getString(4));
-                    result.add(task);
-                }
-            }
-
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-        }
-
-        return result;
+        return task;
     }
 
     @Override
     public void deleteTask(Long task_id, Long user_id) {
-        String sql = "delete from tasks where id = ? and user_id = ?";
-
-        try (Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setLong(1, task_id);
-            stmt.setLong(2, user_id);
-            stmt.executeUpdate();
-            log.info("Task with id {} was deleted", task_id);
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-            log.info("Something went wrong, task with id {} wasn't deleted", task_id);
-        }
-    }
-
-    @Override
-    public Task findById(Long id) {
-        String sql = "select * from tasks where id = ?";
-        Task task = new Task();
-
-        try (Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-        stmt.setLong(1, id);
-        try (ResultSet resultSet = stmt.executeQuery()) {
-            if(resultSet.next()) {
-                task.setId(resultSet.getLong(1));
-                task.setUser_id(resultSet.getLong(2));
-                task.setName(resultSet.getString(3));
-                task.setDescription(resultSet.getString(4));
-                return task;
-            }
-        }
-
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-        }
-
-        return null;
+        jdbcTemplate.update(
+                "delete from tasks where id = ? and user_id = ?",
+                task_id, user_id
+        );
     }
 }

@@ -1,41 +1,42 @@
 package task_manager.dao.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import task_manager.model.User;
 
-import javax.sql.DataSource;
-import java.sql.*;
+import java.util.Arrays;
 
 @Repository("userDaoImpl")
 public class UserDaoImpl implements UserDao {
 
-    DataSource dataSource;
+    JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public UserDaoImpl(@Qualifier("dataSource") DataSource dataSource) {
-        this.dataSource = dataSource;
+    public UserDaoImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public void saveUser(User user) {
 
-        String sql = "insert into users default values";
+        PreparedStatementCreatorFactory factory = new PreparedStatementCreatorFactory(
+                "insert into users default values returning id"
+        );
 
-        try (Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        factory.setReturnGeneratedKeys(true);
 
-            stmt.executeUpdate();
+        PreparedStatementCreator stmt = factory.newPreparedStatementCreator(
+                Arrays.asList()
+        );
 
-            try(ResultSet keys = stmt.getGeneratedKeys()) {
-                if(keys.next()) {
-                    user.setId(keys.getLong(1));
-                }
-            }
+        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(stmt, keyHolder);
 
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-        }
+        Long user_id = keyHolder.getKey().longValue();
+        user.setId(user_id);
     }
 }

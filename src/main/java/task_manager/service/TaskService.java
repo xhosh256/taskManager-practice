@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import task_manager.dao.task.TaskDao;
 import task_manager.model.Task;
-import task_manager.model.User;
 
 import java.util.List;
 
@@ -28,10 +27,6 @@ public class TaskService {
 
     public List<Task> getAllTasks(Long user_id) {
         return taskDao.findAll(user_id);
-    }
-
-    public Task findById(Long id) {
-        return taskDao.findById(id);
     }
 
     public void deleteTask(Long task_id, Long user_id) {
