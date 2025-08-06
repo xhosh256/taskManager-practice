@@ -65,7 +65,7 @@ public class TaskController {
         }
 
         User user = (User) session.getAttribute("user");
-        task.setUser_id(user.getId());
+        task.setUserId(user.getId());
         taskService.createTask(task);
         return "redirect:/tasks/new";
     }

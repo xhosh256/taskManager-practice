@@ -17,19 +17,19 @@ public class TaskService {
     TaskDao taskDao;
 
     @Autowired
-    public TaskService(@Qualifier("taskDaoImpl") TaskDao taskDao) {
+    public TaskService(TaskDao taskDao) {
         this.taskDao = taskDao;
     }
 
     public void createTask(Task task) {
-        taskDao.saveTask(task);
+        taskDao.save(task);
     }
 
     public List<Task> getAllTasks(Long user_id) {
-        return taskDao.findAll(user_id);
+        return taskDao.findAllByUserId(user_id);
     }
 
     public void deleteTask(Long task_id, Long user_id) {
-        taskDao.deleteTask(task_id, user_id);
+        taskDao.delete(taskDao.findById(task_id).orElse(null));
     }
 }

@@ -1,8 +1,10 @@
 package task_manager.dao.user;
 
+import org.springframework.data.repository.CrudRepository;
+import task_manager.model.Task;
 import task_manager.model.User;
 
-public interface UserDao {
+import java.util.List;
 
-    void saveUser(User user);
+public interface UserDao extends CrudRepository<User, Long> {
 }

@@ -17,13 +17,13 @@ public class UserService {
     UserDao userDao;
 
     @Autowired
-    public UserService(@Qualifier("userDaoImpl") UserDao userDao) {
+    public UserService(UserDao userDao) {
         this.userDao = userDao;
     }
 
     public User createUser() {
         User user = new User();
-        userDao.saveUser(user);
+        userDao.save(user);
         return user;
     }
 }
